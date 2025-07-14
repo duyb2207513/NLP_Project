@@ -1,40 +1,54 @@
+
 <!DOCTYPE html>
-<html>
+<html lang="vi">
 
 <head>
-    <title>Flask Chatbot</title>
+    <meta charset="UTF-8">
+    <title>Hệ thống phản hồi tin tức</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
     <style>
         body {
-            font-family: Arial, sans-serif;
-            background-color: #f5f6fa;
+            background-color: #f0f2f5;
+            font-family: "Segoe UI", sans-serif;
             display: flex;
             justify-content: center;
             align-items: center;
             height: 100vh;
         }
 
+        .wrapper {
+            width: 600px;
+        }
+
         .chat-container {
-            width: 500px;
-            height: 500px;
-            background-color: #fff;
-            border-radius: 10px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
             display: flex;
             flex-direction: column;
-            overflow: hidden;
+            height: 700px;
+        }
+
+        .header {
+            background-color: #27ae60;
+            color: white;
+            padding: 20px;
+            text-align: center;
+            font-size: 20px;
         }
 
         .chat-box {
             flex: 1;
-            padding: 15px;
+            padding: 20px;
             overflow-y: auto;
-            border-bottom: 1px solid #ddd;
+            border-bottom: 1px solid #e0e0e0;
         }
 
         .message {
-            margin-bottom: 10px;
+            margin-bottom: 15px;
         }
 
         .message.user {
@@ -47,10 +61,21 @@
             color: #27ae60;
         }
 
+        .options {
+            padding: 15px 20px;
+            border-bottom: 1px solid #e0e0e0;
+            background: #f9f9f9;
+        }
+
+        .options label {
+            font-weight: 500;
+            margin-top: 8px;
+        }
+
         .input-box {
-            padding: 10px;
             display: flex;
-            border-top: 1px solid #ddd;
+            padding: 15px 20px;
+            background-color: #fff;
         }
 
         .input-box input[type="text"] {
@@ -61,7 +86,7 @@
         }
 
         .input-box input[type="submit"] {
-            padding: 10px 15px;
+            padding: 10px 20px;
             margin-left: 10px;
             background-color: #27ae60;
             color: white;
@@ -77,23 +102,44 @@
 </head>
 
 <body>
-    <div class="">
-            <h2 class="">Hệ thống phản hồi thông tin về tin tức</h2>
+    <div class="wrapper">
         <div class="chat-container">
-      
-            <div class="chat-box">
-                <!-- Các tin nhắn được hiển thị ở đây -->
-                <div class="message bot">Xin chào! Tôi có thể giúp gì cho bạn?</div>
-                <!-- Ví dụ tin nhắn người dùng -->
-                <div class="message user">Tôi muốn hỏi về thời tiết.</div>
+            <div class="header">
+                <i class="fas fa-robot"></i> Hệ thống phản hồi thông tin về tin tức
             </div>
-            <form class="input-box" action="/submit" method="post">
-                <select name="model">
+
+            <div class="chat-box">
+                <div class="message user">Yêu cầu: "Cháy rừng ngày 15/3/2026 tại tỉnh Cà Mau phản ánh sự biến đổi của
+                    khí hậu"</div>
+                <div class="message bot"><i class="fas fa-circle-exclamation text-danger"></i> Đây là tin giả</div>
+                <div class="message bot"><i class="fas fa-file-alt text-primary"></i> Tóm tắt: Cháy rừng tại tỉnh Cà Mau.</div>
+                <div class="message bot"><i class="fas fa-link text-success"></i> Những đường link liên quan:</div>
+                <div class="message bot"><a
+                        href="https://vov.vn/the-gioi/chay-rung-nghiem-trong-nhat-trong-3-thap-ky-o-duc-post1214470.vov"
+                        target="_blank">Link 1</a></div>
+                <div class="message bot"><a
+                        href="https://baovanhoa.vn/multimedia/chuyen-nguoi-gac-rung-noi-bien-gioi-151898.html"
+                        target="_blank">Link 2</a></div>
+            </div>
+
+            <div class="options">
+                <label for="model_classification">Chọn mô hình phân lớp</label>
+                <select class="form-select" id="model_classification" name="model_classification">
                     <option value="bilstm">BiLSTM</option>
                     <option value="phobert">PhoBERT</option>
                     <option value="roberta">RoBERTa</option>
                 </select>
-                <input type="text" name="message" placeholder="Nhập tin nhắn hoặc link...">
+
+                <label for="model_summary" class="mt-2">Chọn mô hình tóm tắt</label>
+                <select class="form-select" id="model_summary" name="model_summary">
+                    <option value="vit5">ViT5</option>
+                    <option value="phobert">...</option>
+                    <option value="roberta">...</option>
+                </select>
+            </div>
+
+            <form class="input-box" action="/submit" method="post">
+                <input type="text" name="message" placeholder="Nhập nội dung hoặc đường link...">
                 <input type="submit" value="Gửi">
             </form>
         </div>
