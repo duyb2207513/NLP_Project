@@ -1,48 +1,51 @@
 import torch
 import torch.nn as nn
-from transformers import AutoTokenizer, AutoModelForSequenceClassification
+from transformers import AutoTokenizer, AutoModelForSequenceClassification,AutoModelForSeq2SeqLM
 import torch
 import gdown
 import zipfile
 import os
 
-# roberta_path = "https://drive.google.com/file/d/1x49rDCKdmclDXR1RXm2AnmLuFopqnFxc/view?usp=drive_link"
-
-# # Dùng đúng model đã huấn luyện
-# roberta = "xlm-roberta-base"
-
-# # Load tokenizer
-# roberta_tokenizer = AutoTokenizer.from_pretrained(roberta)
-
-# # Khởi tạo lại model đúng kiến trúc
-# roberta_model = AutoModelForSequenceClassification.from_pretrained(roberta, num_labels=2)
-
-
-# # Load trọng số từ file đã lưu
-# roberta_model.load_state_dict(torch.load("models/roberta_fakenews.pth", map_location=torch.device("cpu")))
-# roberta_model.eval()
-
 # PhoBERT pretrained model
-phoBert = "vinai/phobert-base"
-
-phoBert_id = "1V1UaOMhAqSfag1qtuAE0IA8WGaVBZ6LK"
-
-output = "phobert_fakenews_model.pth"
-if not os.path.exists(output):
-    url = f"https://drive.google.com/uc?id={phoBert_id}"
+roberta_id = "1d4vGr_Vr72-aLDCfDld43mKeqP36Oeld"
+roberta_link = "roberta_fakenews_model"
+output = "roberta_fakenews_model.zip"
+if not os.path.exists(roberta_link):
+    url = f"https://drive.google.com/uc?id={roberta_id}"
     gdown.download(url, output, quiet=False)
+    with zipfile.ZipFile("roberta_fakenews_model.zip", 'r') as zip_ref:
+        zip_ref.extractall("roberta_fakenews_model")
+    os.remove(output)
 else:
     print(f"File {output} đã tồn tại, bỏ qua tải lại.")
-
+    
 # Load tokenizer
-phoBert_tokenizer = AutoTokenizer.from_pretrained(phoBert)
+roberta_tokenizer = AutoTokenizer.from_pretrained("./roberta_fakenews_model/roberta_fakenews_model")
 
 # Khởi tạo model với đúng kiến trúc
-phoBert_model = AutoModelForSequenceClassification.from_pretrained(phoBert, num_labels=2)
+roberta_model = AutoModelForSequenceClassification.from_pretrained("./roberta_fakenews_model/roberta_fakenews_model", num_labels=2)
+
+
+# PhoBERT pretrained model
+phoBert_id = "1tecVeGBWGT9MG8-WZM2Xl_SogAjIeTtO"
+phoBert_link = "phobert_fakenews_model"
+output = "phobert_fakenews_model.zip"
+if not os.path.exists(phoBert_link):
+    url = f"https://drive.google.com/uc?id={phoBert_id}"
+    gdown.download(url, output, quiet=False)
+    with zipfile.ZipFile("phobert_fakenews_model.zip", 'r') as zip_ref:
+        zip_ref.extractall("phobert_fakenews_model")
+    os.remove(output)
+else:
+    print(f"File {output} đã tồn tại, bỏ qua tải lại.")
+    
+# Load tokenizer
+phoBert_tokenizer = AutoTokenizer.from_pretrained("./phobert_fakenews_model/phobert_fakenews_model")
+
+# Khởi tạo model với đúng kiến trúc
+phoBert_model = AutoModelForSequenceClassification.from_pretrained("./phobert_fakenews_model/phobert_fakenews_model", num_labels=2)
 
 # Load trọng số đã train
-phoBert_model.load_state_dict(torch.load("phobert_fakenews_model.pth", map_location=torch.device("cpu")))
-phoBert_model.eval()
 
 # class BiLSTMClassifier(nn.Module):
 #     def __init__(self, vocab_size, embedding_dim, hidden_dim, output_dim, padding_idx):
@@ -74,3 +77,8 @@ phoBert_model.eval()
 # # Load trọng số từ file .pth
 # bilstm_model.load_state_dict(torch.load("models/Bi-LSTM_fakenews.pth", map_location=torch.device('cpu')))
 # bilstm_model.eval()
+
+
+tokenize_sumary = AutoTokenizer.from_pretrained("VietAI/vit5-base-vietnews-summarization")
+model_sumary = AutoModelForSeq2SeqLM.from_pretrained("VietAI/vit5-base-vietnews-summarization")
+

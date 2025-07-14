@@ -28,7 +28,7 @@ pip install -r requirements.txt
 
 ### 4. Chạy ứng dụng Flask
 ```bash
-python3 app.py
+python3 run.py
 ```
 
 Nếu app không khởi chạy, hãy thử thêm dòng sau vào cuối file app.py:

@@ -13,3 +13,5 @@ tqdm
 underthesea
 flask-cors==6.0.1
 gdown
+protobuf==3.20.3
+googlesearch-python==1.3.0

@@ -26,3 +26,5 @@ dist-ssr
 .venv
 backend/venv/
 /backend/.idea/
+/backend/phobert_fakenews_model
+/backend/roberta_fakenews_model
