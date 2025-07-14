@@ -6,7 +6,7 @@ from utils.classificate import classificate
 phoBert_route = Blueprint('phoBert_route', __name__)
 
 @phoBert_route.route('/phoBert', methods=['POST'])
-def predict_roberta():
+def predict_phoBert():
     try:
         data = request.json
         result = classificate(phoBert_tokenizer,phoBert_model,data)
