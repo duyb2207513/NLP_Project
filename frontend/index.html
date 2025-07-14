@@ -1,63 +1,20 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Vite + React</title>
-    <meta charset="UTF-8">
-    <title>Hệ thống phản hồi tin tức</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-  </head>
-  <body>
-    
+
+<head>
+  <meta charset="UTF-8" />
+  <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Hệ thống phản hồi tin tức</title>
+
+  <!-- Bootstrap + Font Awesome -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+</head>
+
 <body>
-  <div id="root">
-    <div class="wrapper">
-        <div class="chat-container">
-            <div class="header">
-                <i class="fas fa-robot"></i> Hệ thống phản hồi thông tin về tin tức
-            </div>
+  <div id="root"></div>
+  <script type="module" src="/src/main.jsx"></script>
+</body>
 
-            <div class="chat-box">
-                <div class="message user">Yêu cầu: "Cháy rừng ngày 15/3/2026 tại tỉnh Cà Mau phản ánh sự biến đổi của
-                    khí hậu"</div>
-                <div class="message bot"><i class="fas fa-circle-exclamation text-danger"></i> Đây là tin giả</div>
-                <div class="message bot"><i class="fas fa-file-alt text-primary"></i> Tóm tắt: Cháy rừng tại tỉnh Cà Mau.</div>
-                <div class="message bot"><i class="fas fa-link text-success"></i> Những đường link liên quan:</div>
-                <div class="message bot"><a
-                        href="https://vov.vn/the-gioi/chay-rung-nghiem-trong-nhat-trong-3-thap-ky-o-duc-post1214470.vov"
-                        target="_blank">Link 1</a></div>
-                <div class="message bot"><a
-                        href="https://baovanhoa.vn/multimedia/chuyen-nguoi-gac-rung-noi-bien-gioi-151898.html"
-                        target="_blank">Link 2</a></div>
-            </div>
-
-            <div class="options">
-                <label for="model_classification">Chọn mô hình phân lớp</label>
-                <select class="form-select" id="model_classification" name="model_classification">
-                    <option value="bilstm">BiLSTM</option>
-                    <option value="phobert">PhoBERT</option>
-                    <option value="roberta">RoBERTa</option>
-                </select>
-
-                <label for="model_summary" class="mt-2">Chọn mô hình tóm tắt</label>
-                <select class="form-select" id="model_summary" name="model_summary">
-                    <option value="vit5">ViT5</option>
-                    <option value="phobert">...</option>
-                    <option value="roberta">...</option>
-                </select>
-            </div>
-
-            <form class="input-box" action="/submit" method="post">
-                <input type="text" name="message" placeholder="Nhập nội dung hoặc đường link...">
-                <input type="submit" value="Gửi">
-            </form>
-        </div>
-      </div>
-    </div>
-    
-    <script type="module" src="/src/main.jsx"></script>
-  </body>
 </html>
