@@ -45,7 +45,7 @@ function App() {
         </div>
 
         <div className="chat-box">
-          {response ? (
+          {response  ? (
             <>
               <div className="message user">Yêu cầu: "{message}"</div>
               <div className="message bot">
