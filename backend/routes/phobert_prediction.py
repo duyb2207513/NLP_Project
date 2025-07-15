@@ -2,7 +2,7 @@ from flask import Blueprint, request, jsonify
 from models import phoBert_model,phoBert_tokenizer, model_sumary, tokenize_sumary
 from utils.classificate import classificate
 from utils.sumarize import sumary_text
-
+from utils.find_related import find_related_links
 
 phoBert_route = Blueprint('phoBert_route', __name__)
 
@@ -12,10 +12,12 @@ def predict_phoBert():
         data = request.json
         result = classificate(phoBert_tokenizer,phoBert_model,data['text'])
         sumaried_text = sumary_text(tokenize_sumary,model_sumary,data['text'])
+        find_related_link= find_related_links(data['text'])
         return jsonify({
             "success": True,
             "data": result,
             "sumary":sumaried_text,
+            "links":find_related_link,
             "message": "Dự đoán thành công"
         }), 200
        
