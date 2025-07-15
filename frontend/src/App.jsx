@@ -2,9 +2,7 @@ import { useState } from 'react';
 import './App.css';
 
 function App() {
-  
   const [message, setMessage] = useState('');
-  // const [result, setResult] = useState('');
   const [response, setResponse] = useState(null);
   const [classificationModel, setClassificationModel] = useState('phoBert');
   const [summaryModel, setSummaryModel] = useState('vit5');
@@ -13,18 +11,21 @@ function App() {
     event.preventDefault(); // Ngăn reload trang
 
     try {
-      const res = await fetch(`http://127.0.0.1:5000/${classificationModel}`, {
+      const res = await fetch(`/api/v1/predict/${classificationModel}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ text: message })
       });
-
+      
       const data = await res.json();
-
+      var label="Giả"
+      if (data.data.label.label ===1)
+        label="Thật"
+      // console.log(data.label)
       if (data.success) {
-        // Giả sử server trả về: { label, summary, links }
         setResponse({
-          label: data.data.label || 'Không xác định',
+          // Truy cập đúng trường con .label trong object label
+          label: label,
           summary: data.data.summary || 'Chưa có tóm tắt',
           links: data.data.links || []
         });
@@ -36,7 +37,6 @@ function App() {
     }
   };
 
-
   return (
     <div className="wrapper">
       <div className="chat-container">
@@ -45,21 +45,25 @@ function App() {
         </div>
 
         <div className="chat-box">
-          {response  ? (
+          {response ? (
             <>
               <div className="message user">Yêu cầu: "{message}"</div>
+
               <div className="message bot">
                 <i className="fas fa-circle-exclamation text-danger"></i> {response.label}
               </div>
+
               <div className="message bot">
                 <i className="fas fa-file-alt text-primary"></i> Tóm tắt: {response.summary}
               </div>
+
               <div className="message bot">
                 <i className="fas fa-link text-success"></i> Những đường link liên quan:
               </div>
+
               {response.links.map((link, idx) => (
                 <div className="message bot" key={idx}>
-                  <a href={link} target="_blank" rel="noopener noreferrer">Link {idx + 1}</a>
+                  <a href={link} target="_blank" rel="noopener noreferrer">Link {link}</a>
                 </div>
               ))}
             </>
@@ -87,7 +91,7 @@ function App() {
             onChange={(e) => setClassificationModel(e.target.value)}
           >
             <option value="bilstm">BiLSTM</option>
-            <option value="phobert">PhoBERT</option>
+            <option value="phoBert">PhoBERT</option>
             <option value="roberta">RoBERTa</option>
           </select>
 
@@ -99,8 +103,7 @@ function App() {
             onChange={(e) => setSummaryModel(e.target.value)}
           >
             <option value="vit5">ViT5</option>
-            {/* <option value="phobert">...</option>
-            <option value="roberta">...</option> */}
+            {/* <option value="phobert">... (sau này thêm nếu cần) */}
           </select>
 
           <button type="submit" className="btn btn-success mt-2 w-100">

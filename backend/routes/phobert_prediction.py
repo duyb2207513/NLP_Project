@@ -15,12 +15,14 @@ def predict_phoBert():
         find_related_link= find_related_links(data['text'])
         return jsonify({
             "success": True,
-            "data": result,
-            "sumary":sumaried_text,
-            "links":find_related_link,
+            "data": {
+                "label": result,
+                "summary": sumaried_text,
+                "links": find_related_link
+            },
             "message": "Dự đoán thành công"
-        }), 200
-       
+}), 200
+
     except Exception as e:
             return jsonify({
                 "success": False,
