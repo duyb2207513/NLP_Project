@@ -1,6 +1,6 @@
 from flask import Blueprint, request, jsonify
 from models import bilstm_model,bilstm_tokenizer, model_sumary, tokenize_sumary
-from utils.classificate import classificate
+from utils.classificate import classificate_lstm
 from utils.sumarize import sumary_text
 from utils.find_related import find_related_links
 
@@ -12,7 +12,8 @@ bilstm_route = Blueprint('bilstm_route', __name__)
 def predict_BiLSTM():
     try:
         data = request.json
-        result = classificate(bilstm_tokenizer,bilstm_model,data['text'])
+        result = classificate_lstm(bilstm_tokenizer,bilstm_model,data['text'])
+        print(result)
         sumaried_text = sumary_text(tokenize_sumary,model_sumary,data['text'])
         find_related_link= find_related_links(data['text'])
         return jsonify({
@@ -31,3 +32,4 @@ def predict_BiLSTM():
                 "data": None,
                 "message": str(e)
             }), 400
+

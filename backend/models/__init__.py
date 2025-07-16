@@ -7,7 +7,7 @@ import zipfile
 import os
 from tensorflow.keras.preprocessing.text import Tokenizer
 from tensorflow.keras.preprocessing.sequence import pad_sequences
-
+    
 # PhoBERT pretrained model
 roberta_id = "1GgfQ0u-lTcywm4gY8pak-OBzxEDLIu9R"
 roberta_link = "roberta_fakenews_model"
@@ -53,40 +53,79 @@ bilstm_tokenizer = Tokenizer(num_words=None, oov_token="<unk>")
 word_index = bilstm_tokenizer.word_index
 
 class BiLSTMClassifier(nn.Module):
-    def __init__(self, vocab_size, embedding_dim, hidden_dim, output_dim, padding_idx):
+    def __init__(self, vocab_size, embedding_dim, hidden_dim, output_dim, dropout):
         super(BiLSTMClassifier, self).__init__()
-        self.embedding = nn.Embedding(vocab_size, embedding_dim, padding_idx=padding_idx)
-        self.lstm = nn.LSTM(embedding_dim, hidden_dim, bidirectional=True, batch_first=True)
-        self.dropout = nn.Dropout(0.5)
-        self.fc = nn.Linear(hidden_dim * 2, output_dim)
-    
+
+        self.embedding = nn.Embedding(vocab_size, embedding_dim, padding_idx=0)
+
+        self.lstm1 = nn.LSTM(embedding_dim, hidden_dim, batch_first=True, bidirectional=True)
+        self.lstm2 = nn.LSTM(hidden_dim * 2, hidden_dim, batch_first=True, bidirectional=True)
+        self.lstm3 = nn.LSTM(hidden_dim * 2, hidden_dim, batch_first=True, bidirectional=True)
+
+        self.attention = nn.Linear(hidden_dim * 2, 1)
+
+        self.dropout = nn.Dropout(dropout)
+
+        self.fc1 = nn.Linear(hidden_dim * 2, 128)
+        self.bn1 = nn.BatchNorm1d(128)
+        self.fc2 = nn.Linear(128, 64)
+        self.bn2 = nn.BatchNorm1d(64)
+        self.fc3 = nn.Linear(64, output_dim)
+
+        self.relu = nn.ReLU()
+        self.sigmoid = nn.Sigmoid()
+
     def forward(self, x):
-        embedded = self.embedding(x)
-        lstm_out, _ = self.lstm(embedded)
-        # Lấy hidden state cuối cùng
-        out = lstm_out[:, -1, :]
-        out = self.dropout(out)
-        logits = self.fc(out)
-        return torch.sigmoid(logits)
+        embedded = self.embedding(x)                      # (batch, seq_len, embedding_dim)
+        lstm_out1, _ = self.lstm1(embedded)               # (batch, seq_len, hidden_dim*2)
+        lstm_out2, _ = self.lstm2(lstm_out1)              # (batch, seq_len, hidden_dim*2)
+        lstm_out3, _ = self.lstm3(lstm_out2)              # (batch, seq_len, hidden_dim*2)
+
+        # Attention cơ bản: trọng số theo thời gian
+        attn_weights = torch.softmax(self.attention(lstm_out3), dim=1)   # (batch, seq_len, 1)
+        context = torch.sum(attn_weights * lstm_out3, dim=1)             # (batch, hidden_dim*2)
+
+        out = self.dropout(context)
+        out = self.relu(self.bn1(self.fc1(out)))          # (batch, 128)
+        out = self.relu(self.bn2(self.fc2(out)))          # (batch, 64)
+        out = self.fc3(out)                               # (batch, 1)
+        return self.sigmoid(out)  # giữ shape (batch_size, 1)
+
 
 # Tham số mô hình (phải khớp với lúc train)
-vocab_size = len(word_index) + 1  # Dùng word_index của Keras nếu muốn tái sử dụng từ điển
-embedding_dim = 300
-hidden_dim = 256
-output_dim = 1
-padding_idx = 0  # padding index (0 nếu dùng pad_sequences)
-bilstm_link = "models/Bi-LSTM_fakenews_model.pth"
 
-# Khởi tạo mô hình
-bilstm_model = BiLSTMClassifier(vocab_size, embedding_dim, hidden_dim, output_dim, padding_idx)
+
+
+# biLSTM pretrained model
+
+# ID của file từ link Google Drive
+
+file_id = "13mXjBvICSBKDX5_eUqYbL7m0DBSu86ZW"
+output = "bilstm_fakenews_model.pth"
+
+if not os.path.exists(output):
+    url = f"https://drive.google.com/uc?id={file_id}"
+    gdown.download(url, output, quiet=False)
+else:
+    print(f"File {output} đã tồn tại, bỏ qua tải lại.")
 
 # Load trọng số từ file .pth
 # 1. Tải checkpoint
-checkpoint = torch.load(bilstm_link, map_location=torch.device('cpu'))
+checkpoint = torch.load(output, map_location="cpu")
+config = checkpoint['model_config']
 
-# 2. Chỉ load state_dict của model
-state_dict = checkpoint.get('model_state_dict', checkpoint.get('state_dict', checkpoint))
-bilstm_model.load_state_dict(state_dict, strict=False)
+# Khởi tạo mô hình
+bilstm_model =  BiLSTMClassifier(
+    vocab_size=config['vocab_size'],
+    embedding_dim=100, # Corrected embedding_dim
+    hidden_dim=64,     # Corrected hidden_dim
+    output_dim=config['output_dim'],
+    dropout=config['dropout']
+)
+
+# 2. # Load trạng thái
+# state_dict = checkpoint.get('model_state_dict', checkpoint.get('state_dict', checkpoint))
+bilstm_model.load_state_dict(checkpoint['model_state_dict'])
 
 # 3. Chuyển sang chế độ eval
 bilstm_model.eval()
