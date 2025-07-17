@@ -8,15 +8,26 @@ function App() {
   const [summaryModel, setSummaryModel] = useState('vit5');
 
   const handlePhoBertSubmit = async (event) => {
+    console.log("Hello")
     event.preventDefault(); // Ngăn reload trang
-
+    let res;
     try {
-      const res = await fetch(`/api/v1/predict/${classificationModel}`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ text: message })
-      });
-      
+      console.log("Vào đây")
+      const urlRegrex = /^https?:\/\/(?:www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b(?:[-a-zA-Z0-9()@:%_\+.~#?&\/=]*)$/
+      if (urlRegrex.test(message)) {
+        
+        res = await fetch(`/api/v1/predict/withlink/${classificationModel}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ text: message })
+        });
+      } else
+        console.log("Vao day")
+        res = await fetch(`/api/v1/predict/${classificationModel}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ text: message })
+        });
       const data = await res.json();
       var label="Giả"
       if (data.data.label.label ===1)

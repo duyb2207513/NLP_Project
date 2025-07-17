@@ -3,6 +3,7 @@ from models import phoBert_model,phoBert_tokenizer, model_sumary, tokenize_sumar
 from utils.classificate import classificate
 from utils.sumarize import sumary_text
 from utils.find_related import find_related_links
+from utils.crawl_data import extract_main_text
 
 phoBert_route = Blueprint('phoBert_route', __name__)
 
@@ -21,7 +22,35 @@ def predict_phoBert():
                 "links": find_related_link
             },
             "message": "Dự đoán thành công"
-}), 200
+        }), 200
+
+    except Exception as e:
+            return jsonify({
+                "success": False,
+                "data": None,
+                "message": str(e)
+            }), 400
+
+@phoBert_route.route('/withlink/phoBert', methods=['POST'])
+def predict_phoBert_withlink():
+    try:
+        
+        data = request.json
+        text = extract_main_text(data['text'])
+        result = classificate(phoBert_tokenizer,phoBert_model,text)
+        sumaried_text = sumary_text(tokenize_sumary,model_sumary,text)
+        print(text)
+        find_related_link= find_related_links(text)
+        print("Nó vô đây đúng không")
+        return jsonify({
+            "success": True,
+            "data": {
+                "label": result,
+                "summary": sumaried_text,
+                "links": find_related_link
+            },
+            "message": "Dự đoán thành công"
+        }), 200
 
     except Exception as e:
             return jsonify({

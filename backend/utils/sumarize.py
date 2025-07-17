@@ -1,13 +1,13 @@
 def sumary_text(tokenize_sumary,model_sumary ,text):
   # Thêm tiền tố 'summarize:' giống T5
   input_text = "summarize: " + text
+  print(input_text)
   input_ids = tokenize_sumary.encode(input_text, return_tensors="pt", max_length=512, truncation=True)
-
   summary_ids = model_sumary.generate(
       input_ids,
-      max_length=100,
-      min_length=40,
-      num_beams=4,
+      max_length=150,
+      min_length=100,
+      num_beams=5,
       early_stopping=True
   )
 
