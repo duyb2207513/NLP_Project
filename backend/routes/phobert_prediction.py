@@ -39,9 +39,8 @@ def predict_phoBert_withlink():
         text = extract_main_text(data['text'])
         result = classificate(phoBert_tokenizer,phoBert_model,text)
         sumaried_text = sumary_text(tokenize_sumary,model_sumary,text)
-        print(text)
         find_related_link= find_related_links(text)
-        print("Nó vô đây đúng không")
+        
         return jsonify({
             "success": True,
             "data": {
