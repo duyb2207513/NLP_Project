@@ -8,45 +8,46 @@ function App() {
   const [summaryModel, setSummaryModel] = useState('vit5');
 
   const handlePhoBertSubmit = async (event) => {
-    console.log("Hello")
-    event.preventDefault(); // Ngăn reload trang
-    let res;
-    try {
-      console.log("Vào đây")
-      const urlRegrex = /^https?:\/\/(?:www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b(?:[-a-zA-Z0-9()@:%_\+.~#?&\/=]*)$/
-      if (urlRegrex.test(message)) {
-        
-        res = await fetch(`/api/v1/predict/withlink/${classificationModel}`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ text: message })
-        });
-      } else
-        console.log("Vao day")
-        res = await fetch(`/api/v1/predict/${classificationModel}`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ text: message })
-        });
-      const data = await res.json();
-      var label="Giả"
-      if (data.data.label.label ===1)
-        label="Thật"
-      // console.log(data.label)
-      if (data.success) {
-        setResponse({
-          // Truy cập đúng trường con .label trong object label
-          label: label,
-          summary: data.data.summary || 'Chưa có tóm tắt',
-          links: data.data.links || []
-        });
-      } else {
-        setResponse({ label: 'Lỗi: ' + data.message, summary: '', links: [] });
-      }
-    } catch (err) {
-      setResponse({ label: 'Lỗi kết nối đến server', summary: '', links: [] });
+  event.preventDefault();
+
+  //  Kiểm tra nếu không phải là URL thì không cho gửi
+  if (!/^https?:\/\/(?:www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b(?:[-a-zA-Z0-9()@:%_\+.~#?&\/=]*)$/.test(message)) {
+    alert("Vui lòng nhập một đường link hợp lệ để hệ thống phân tích.");
+    return;
+  }
+
+  let res;
+  try {
+    const requestBody = {
+      text: message,
+      summary_model: summaryModel
+    };
+
+    //  Luôn dùng API xử lý link
+    res = await fetch(`/api/v1/predict/withlink/${classificationModel}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(requestBody)
+    });
+
+    const data = await res.json();
+    let label = "Giả";
+    if (data.data.label.label === 1) label = "Thật";
+
+    if (data.success) {
+      setResponse({
+        label: label,
+        summary: data.data.summary || 'Chưa có tóm tắt',
+        links: data.data.links || []
+      });
+    } else {
+      setResponse({ label: 'Lỗi: ' + data.message, summary: '', links: [] });
     }
-  };
+
+  } catch (err) {
+    setResponse({ label: 'Lỗi kết nối đến server', summary: '', links: [] });
+  }
+};
 
   return (
     <div className="wrapper">
@@ -114,6 +115,8 @@ function App() {
             onChange={(e) => setSummaryModel(e.target.value)}
           >
             <option value="vit5">ViT5</option>
+            <option value="bartpho">BARTPho</option>
+            <option value="mT5">mT5</option>
             {/* <option value="phobert">... (sau này thêm nếu cần) */}
           </select>
 

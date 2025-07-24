@@ -134,3 +134,5 @@ bilstm_model.eval()
 tokenize_sumary = AutoTokenizer.from_pretrained("VietAI/vit5-base-vietnews-summarization")
 model_sumary = AutoModelForSeq2SeqLM.from_pretrained("VietAI/vit5-base-vietnews-summarization")
 
+
+
