@@ -59,7 +59,7 @@ def predict_phoBert_withlink():
         result = classificate(phoBert_tokenizer,phoBert_model,text)
         sumaried_text = sumary_text(summary_model, text)
         find_related_link= find_related_links(text)
-
+        print(find_related_link)
         
         return jsonify({
             "success": True,

@@ -59,7 +59,8 @@ def predict_phoBert_withlink():
         result = classificate(roberta_tokenizer, roberta_model, text)
         sumaried_text = sumary_text(summary_model, text)
         find_related_link= find_related_links(text)
-
+        # print(find_related_link)
+        
       
         print("Nó vô đây đúng không")
         return jsonify({

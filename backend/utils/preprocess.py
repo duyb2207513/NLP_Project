@@ -24,8 +24,8 @@ def replace_common_token(txt):
     txt = re.sub(EMAIL, ' ', txt)
     txt = re.sub(URL, ' ', txt)
     txt = re.sub(MENTION, ' ', txt)
-    txt = re.sub(DATETIME, ' ', txt)
-    txt = re.sub(NUMBER, ' ', txt)
+    # txt = re.sub(DATETIME, ' ', txt)
+    # txt = re.sub(NUMBER, ' ', txt)
     return txt
 
 
@@ -46,7 +46,7 @@ def preprocess(txt, tokenize=True):
     txt = re.sub('&.{3,4};', ' ', txt)
 
 
-    txt = txt.lower()
+    # txt = txt.lower()
     txt = replace_common_token(txt)
     txt = remove_emoji(txt)
     txt = re.sub(RE_CLEAR_1, ' ', txt)

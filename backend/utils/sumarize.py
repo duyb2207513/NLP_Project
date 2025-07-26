@@ -14,7 +14,8 @@
 
 #   summary = tokenize_sumary.decode(summary_ids[0], skip_special_tokens=True)
 #   return summary
-def sumary_text(model_bundle, text, max_length=150, min_length=100, num_beams=5):
+
+def sumary_text(model_bundle, text, max_length=150, min_length=1, num_beams=5):
     tokenizer = model_bundle["tokenizer"]
     model = model_bundle["model"]
 
