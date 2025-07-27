@@ -16,6 +16,7 @@ def extract_main_text(link, min_length=150):
     try:
         print("Hello tôi đang cào dữ liệu nè")
         resp = session.get(link, timeout=10)
+
         resp.raise_for_status()
         soup = BeautifulSoup(resp.content, 'lxml')
         paragraphs = soup.find_all('p')
@@ -25,4 +26,5 @@ def extract_main_text(link, min_length=150):
     except Exception as e:
         print(f"[!] Lỗi link {link}: {e}")
         return ''
+# print(extract_main_text("https://vnexpress.net/oto-cho-19-sinh-vien-bi-lat-4918605.html"))
     
